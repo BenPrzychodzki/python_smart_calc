@@ -15,36 +15,39 @@ Use /exit command if you want to close application.
 
 Program created by Beniamin Przychodzki, 2021."""
 
+
 class Calculator:
     variables = {}
-
 
     def __init__(self):
         self.isRunning = True
 
-
     @classmethod
     def handle_variables(cls, variable: str):
-        variable = variable.split("=", 1)  # making sure that multiple value declarations are impossible (a = 2 = 5 etc.)
-        if variable[0].isalpha() and variable[1].isdigit():  # variable is properly added, add it to dictionary
+        variable = variable.split(
+            "=", 1
+        )  # making sure that multiple value declarations are impossible (a = 2 = 5 etc.)
+        if (
+            variable[0].isalpha() and variable[1].isdigit()
+        ):  # variable is properly added, add it to dictionary
             cls.variables[variable[0]] = variable[1]
-        elif variable[0].isalpha() and variable[1] in cls.variables:  # use variable value from previously saved variables
+        elif (
+            variable[0].isalpha() and variable[1] in cls.variables
+        ):  # use variable value from previously saved variables
             cls.variables[variable[0]] = cls.variables[variable[1]]
         elif not variable[0].isalpha():  # if variable name is invalid, print an error
             print("Invalid identifier")
         elif not variable[1].isdigit():
             print("Invalid assignment")
 
-
     def handle_commands(self, command: str):
         if command == "/exit":
             print("Bye!")
             self.isRunning = False
-        elif command =="/help":
+        elif command == "/help":
             print(HELP_INFO)
         else:
             print("Unknown command")
-
 
     def handle_input(self) -> None:
         input_data = self.get_input()
@@ -62,54 +65,61 @@ class Calculator:
                     print("Invalid expression")
             else:
                 print("Unknown variable")
-        
 
     @staticmethod
     def replace_variables(equation_data: str):
         for key, value in Calculator.variables.items():
             if key in equation_data:  # change variables in string to int values
                 equation_data = equation_data.replace(key, value)
-        if equation_data[-1] in OPERATORS or re.search('[a-zA-Z]', equation_data):  # search for undefined variables in equation or misplaced operators
+        if equation_data[-1] in OPERATORS or re.search(
+            "[a-zA-Z]", equation_data
+        ):  # search for undefined variables in equation or misplaced operators
             return None
         return equation_data
 
-
     @staticmethod
     def check_equation(input_data: str):
-        symbols = [x for x in re.findall(r'[+]+|[-]+|[/]+|[*]+|[\^]+|[%]+|[()]|\d+', input_data)]  # search and seperate operators from digits
-        fixed_equation = ''
+        symbols = [
+            x
+            for x in re.findall(r"[+]+|[-]+|[/]+|[*]+|[\^]+|[%]+|[()]|\d+", input_data)
+        ]  # search and seperate operators from digits
+        fixed_equation = ""
         for symbol in symbols:
-            if symbol.isdigit() or symbol in '()':
+            if symbol.isdigit() or symbol in "()":
                 fixed_equation += symbol
-            elif symbol[0] in '+-−':  # if there is more than one plus or minus operator, change it to plus, or keep only one
+            elif (
+                symbol[0] in "+-−"
+            ):  # if there is more than one plus or minus operator, change it to plus, or keep only one
                 if symbol.count(symbol[0]) % 2 == 0:
-                    fixed_equation += '+'
+                    fixed_equation += "+"
                 elif symbol.count(symbol[0]) % 2 == 1:
                     fixed_equation += symbol[0]
-            elif symbol[0] in '*/^%':  # if there is more than one operator, raise an error
-                if symbol.count(symbol[0]) > 1: 
+            elif (
+                symbol[0] in "*/^%"
+            ):  # if there is more than one operator, raise an error
+                if symbol.count(symbol[0]) > 1:
                     return None
                 fixed_equation += symbol[0]
-        if fixed_equation.count('(') == fixed_equation.count(')'):  # check if all brackets are closed
+        if fixed_equation.count("(") == fixed_equation.count(
+            ")"
+        ):  # check if all brackets are closed
             return fixed_equation
         return None
-    
 
     @staticmethod
     def compute(number_list):
         return sum(number_list)
-        
 
     @staticmethod
     def get_input():
         return input().replace(" ", "")
-            
+
 
 def main():
     calculator = Calculator()
     while calculator.isRunning:
         calculator.handle_input()
-    
-    
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     main()
